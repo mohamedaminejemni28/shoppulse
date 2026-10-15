@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: shop
+    description: Tables opérationnelles PostgreSQL de ShopPulse.
+    schema: shop
+    tables:
+      - name: customers
+      - name: categories
+      - name: products
+      - name: orders
+      - name: order_items
+      - name: web_sessions
+      - name: events

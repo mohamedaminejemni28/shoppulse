@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopPulse — Data Commerce</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">S</span><span>ShopPulse</span></div>
+      <p class="eyebrow">DATA COMMERCE</p>
+      <nav>
+        <button class="nav-item active" data-view="dashboard"><span>◫</span> Vue d’ensemble</button>
+        <button class="nav-item" data-view="orders"><span>↗</span> Commandes</button>
+        <button class="nav-item" data-view="customers"><span>◎</span> Clients</button>
+        <button class="nav-item" data-view="products"><span>◇</span> Produits & stock</button>
+        <button class="nav-item" data-view="supervision"><span>◉</span> Supervision</button>
+      </nav>
+      <div class="system-card">
+        <span class="live-dot"></span>
+        <div><strong>Pipeline actif</strong><small>PostgreSQL · Kestra · MinIO</small></div>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div><p class="eyebrow">SHOPPULSE CONTROL CENTER</p><h1 id="page-title">Vue d’ensemble</h1></div>
+        <div class="header-actions"><span id="last-updated">Chargement…</span><button id="refresh">Actualiser</button></div>
+      </header>
+
+      <section id="dashboard" class="view active">
+        <div id="metrics" class="metrics-grid"></div>
+        <div class="content-grid">
+          <article class="panel chart-panel">
+            <div class="panel-head"><div><p class="eyebrow">14 DERNIERS JOURS</p><h2>Revenu net</h2></div><span class="pill">USD</span></div>
+            <div id="sales-chart" class="bar-chart"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">DISTRIBUTION</p><h2>État des commandes</h2></div></div>
+            <div id="status-list" class="status-list"></div>
+          </article>
+        </div>
+        <article class="panel"><div class="panel-head"><div><p class="eyebrow">TEMPS RÉEL</p><h2>Dernières commandes</h2></div><button class="text-button" data-go="orders">Tout afficher →</button></div><div id="recent-orders"></div></article>
+        <div class="content-grid">
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">PERFORMANCE</p><h2>Meilleurs produits</h2></div></div><div id="top-products"></div></article>
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">FIDÉLITÉ</p><h2>Meilleurs clients</h2></div></div><div id="top-customers"></div></article>
+        </div>
+        <div class="content-grid">
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">FUNNEL 30 JOURS</p><h2>Conversion</h2></div></div><div id="conversion-funnel"></div></article>
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">ACTIVITÉ</p><h2>Événements récents</h2></div></div><div id="recent-events"></div></article>
+        </div>
+      </section>
+
+      <section id="orders" class="view"><article class="panel"><div class="panel-head"><div><p class="eyebrow">OPÉRATIONS</p><h2>Toutes les commandes</h2></div></div><div id="orders-table"></div></article></section>
+      <section id="customers" class="view"><article class="panel"><div class="panel-head"><div><p class="eyebrow">RELATION CLIENT</p><h2>Clients</h2></div></div><div id="customers-table"></div></article></section>
+      <section id="products" class="view"><article class="panel"><div class="panel-head"><div><p class="eyebrow">CATALOGUE</p><h2>Produits et disponibilité</h2></div></div><div id="products-table"></div></article></section>
+      <section id="supervision" class="view">
+        <div id="service-health" class="service-grid"></div>
+        <div class="content-grid">
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">QUALITÉ</p><h2>Fraîcheur des données</h2></div></div><div id="freshness-table"></div></article>
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">ORCHESTRATION</p><h2>Dernières exécutions</h2></div></div><div id="kestra-runs"></div></article>
+        </div>
+        <article class="panel"><div class="panel-head"><div><p class="eyebrow">PIPELINES</p><h2>Historique et erreurs</h2></div></div><div id="pipeline-runs"></div></article>
+      </section>
+    </main>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>

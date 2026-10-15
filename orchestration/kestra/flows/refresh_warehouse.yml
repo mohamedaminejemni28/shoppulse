@@ -1,0 +1,51 @@
+id: refresh_warehouse
+namespace: shoppulse.warehouse
+
+description: Charger le Data Warehouse PostgreSQL de ShopPulse
+
+labels:
+  project: shoppulse
+  pipeline: warehouse
+
+retry:
+  type: exponential
+  behavior: RETRY_FAILED_TASK
+  maxAttempts: 3
+  interval: PT10S
+  maxInterval: PT1M
+  maxDuration: PT10M
+  warningOnRetry: true
+
+tasks:
+  - id: charger_warehouse
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: SELECT * FROM warehouse.refresh();
+    fetchType: FETCH_ONE
+
+  - id: afficher_resultat
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Data Warehouse mis à jour.
+      Clients : {{ outputs.charger_warehouse.row.dim_customers }}
+      Produits : {{ outputs.charger_warehouse.row.dim_products }}
+      Lignes de vente : {{ outputs.charger_warehouse.row.fact_sales }}
+      Événements : {{ outputs.charger_warehouse.row.fact_events }}
+
+triggers:
+  - id: chargement_quotidien_2h30
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "30 2 * * *"
+    timezone: Africa/Lagos
+    recoverMissedSchedules: LAST
+
+errors:
+  - id: journaliser_erreur_warehouse
+    type: io.kestra.plugin.core.log.Log
+    level: ERROR
+    message: |
+      Échec du chargement du Data Warehouse.
+      Exécution : {{ execution.id }}.
+      Tâches en échec : {{ tasksWithState('FAILED') }}.

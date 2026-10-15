@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: sales
+    description: Une ligne par article vendu, enrichie avec le client et le produit.
+    columns:
+      - name: sale_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('customers')
+              field: customer_id
+      - name: product_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('products')
+              field: product_id
+      - name: order_status
+        data_tests:
+          - accepted_values:
+              values: ['created', 'pending_payment', 'paid', 'processing', 'shipped', 'completed', 'cancelled', 'refunded']
+
+  - name: customers
+    description: Indicateurs et segmentation par client.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: email
+        data_tests: [unique, not_null]
+      - name: customer_segment
+        data_tests:
+          - accepted_values:
+              values: ['prospect', 'one_time', 'repeat', 'loyal']
+
+  - name: products
+    description: Performance commerciale et comportementale de chaque produit.
+    columns:
+      - name: product_id
+        data_tests: [unique, not_null]
+      - name: sku
+        data_tests: [unique, not_null]
+
+  - name: events
+    description: Événements agrégés par date, type, appareil et canal.
+    columns:
+      - name: event_date
+        data_tests: [not_null]
+      - name: event_type
+        data_tests: [not_null]
+      - name: event_count
+        data_tests: [not_null]

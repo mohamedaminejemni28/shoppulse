@@ -1,0 +1,365 @@
+\documentclass[10pt,letterpaper]{article}
+
+% ==========================================================
+% PACKAGES
+% ==========================================================
+
+\usepackage[
+    letterpaper,
+    top=0.38in,
+    bottom=0.38in,
+    left=0.55in,
+    right=0.55in
+]{geometry}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{ragged2e}
+
+% ==========================================================
+% COLORS
+% ==========================================================
+
+\definecolor{primary}{HTML}{111827}
+\definecolor{secondary}{HTML}{4B5563}
+\definecolor{rulegray}{HTML}{D1D5DB}
+
+% ==========================================================
+% GENERAL STYLE
+% ==========================================================
+
+\pagestyle{empty}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{0pt}
+
+\renewcommand{\arraystretch}{1.03}
+\renewcommand{\familydefault}{\rmdefault}
+
+\color{primary}
+
+\emergencystretch=2em
+\linespread{1.00}
+
+\urlstyle{same}
+
+% ==========================================================
+% BULLETS
+% ==========================================================
+
+\setlist[itemize]{
+    leftmargin=1.25em,
+    label=\textbullet,
+    itemsep=1.2pt,
+    topsep=2pt,
+    parsep=0pt,
+    partopsep=0pt
+}
+
+% ==========================================================
+% SECTION STYLE
+% ==========================================================
+
+\titleformat{\section}
+  {\fontsize{10.5}{12}\selectfont\bfseries\scshape\color{primary}}
+  {}{0pt}{}
+  [\vspace{1.2pt}\color{rulegray}\titlerule]
+
+\titlespacing*{\section}
+  {0pt}
+  {6pt}
+  {3.5pt}
+
+% ==========================================================
+% EXPERIENCE / EDUCATION ENTRY
+% ==========================================================
+
+\newcommand{\resumeEntry}[4]{%
+    \begin{tabularx}{\textwidth}
+    {@{}>{\RaggedRight\arraybackslash}X
+    >{\RaggedLeft\arraybackslash}p{1.65in}@{}}
+
+        \textbf{#1}
+        &
+        {\small\textit{#2}}
+        \\[-1pt]
+
+        {\small\textit{\color{secondary}#3}}
+        &
+        {\small\textit{\color{secondary}#4}}
+
+    \end{tabularx}
+}
+
+% ==========================================================
+% PROJECT ENTRY
+% ==========================================================
+
+\newcommand{\projectEntry}[2]{%
+    \begin{tabularx}{\textwidth}
+    {@{}>{\RaggedRight\arraybackslash}X
+    >{\RaggedLeft\arraybackslash}p{1.65in}@{}}
+
+        \textbf{#1}
+        &
+        {\small\textit{#2}}
+
+    \end{tabularx}
+}
+
+% ==========================================================
+% SKILL ENTRY
+% ==========================================================
+
+\newcommand{\skill}[2]{%
+    \textbf{#1:} #2\\[1.5pt]
+}
+
+% ==========================================================
+% DOCUMENT
+% ==========================================================
+
+\begin{document}
+
+\RaggedRight
+
+% ==========================================================
+% HEADER
+% ==========================================================
+
+\begin{center}
+
+    {\fontsize{22}{25}\selectfont
+    \bfseries
+    Mohamed Amine Jemni}
+
+    \\[1.5pt]
+
+    {\fontsize{11}{13}\selectfont
+    \color{secondary}
+    Data Engineer}
+
+    \\[4pt]
+
+    {\fontsize{9.4}{11.2}\selectfont
+    Tunis, Tunisia
+    \enspace|\enspace
+    +216 55 498 260
+    \enspace|\enspace
+    \href{mailto:mohamedamine.jemni@supcom.tn}
+    {mohamedamine.jemni@supcom.tn}}
+
+    \\[2pt]
+
+    {\fontsize{9.4}{11.2}\selectfont
+    \href{https://linkedin.com/in/mohamed-amine-jemni}
+    {linkedin.com/in/mohamed-amine-jemni}
+    \enspace|\enspace
+    \href{https://github.com/mohamedaminejemni28}
+    {github.com/mohamedaminejemni28}}
+
+\end{center}
+
+\vspace{-10pt}
+
+% ==========================================================
+% PROFESSIONAL SUMMARY
+% ==========================================================
+
+\section{Professional Summary}
+
+Fresh ICT Engineering graduate with a strong interest in Data Engineering and hands-on experience with data pipelines, data integration, processing, and storage. Proficient in Python, SQL, PostgreSQL, Pandas, Docker, and AWS S3, with experience transforming raw data into clean, structured, and reusable datasets for analytics and machine learning. Motivated to start a career in Data Engineering and contribute to reliable, scalable, and efficient data solutions.
+
+% ==========================================================
+% TECHNICAL SKILLS
+% ==========================================================
+
+\section{Technical Skills}
+
+\skill{Data Engineering}
+{Python, SQL, PostgreSQL, Pandas, NumPy, ETL/ELT, Data Pipelines, Data Integration}
+
+\skill{Big Data / Data Stack}
+{Apache Spark, Databricks, Snowflake, BigQuery, dbt, Apache Airflow}
+
+\skill{Cloud / DevOps / MLOps}
+{AWS, AWS S3, GCP, Azure, Docker, Git, CI/CD, Kubernetes, Terraform, MLflow}
+
+\skill{AI / Machine Learning}
+{scikit-learn, XGBoost, LightGBM, Classification, Clustering, NLP, Deep Learning, SHAP}
+
+\skill{Analytics / Programming}
+{Power BI, Looker, SciPy, Scala, C, C++}
+
+% ==========================================================
+% PROFESSIONAL EXPERIENCE
+% ==========================================================
+
+\section{Professional Experience}
+
+\resumeEntry
+{Final-Year Engineering Project (PFE) -- Machine Learning \& MLOps for Biomechanical Analysis}
+{May -- Aug. 2026}
+{Human Performance Laboratory, University of New Brunswick}
+{New Brunswick, Canada}
+\vspace{-7pt}
+
+\begin{itemize}
+
+    \item Built end-to-end data processing and machine-learning pipelines for
+    three biomechanical gait studies, including data cleaning, feature selection,
+    validation, model evaluation, and explainability.
+
+    \item Developed and evaluated nine machine-learning and deep-learning models
+    using cross-validation, performance metrics, and SHAP-based interpretation.
+
+    \item Developed a React/FastAPI platform integrating PostgreSQL, MLflow,
+    DagsHub, and AWS S3 for experiment tracking, data management, model results,
+    and artifact storage.
+
+\end{itemize}
+
+\vspace{1pt}
+
+\resumeEntry
+{AI \& Automation Intern}
+{Jul. -- Aug. 2025}
+{SFM Technologie}
+{Tunisia}
+\vspace{-7pt}
+
+\begin{itemize}
+
+    \item Designed a multi-agent automation solution for sales follow-up,
+    customer-information extraction, web data collection, reminders, and
+    automated reporting.
+
+    \item Developed data extraction and automation workflows using Python,
+    LangChain, Gemini, Selenium, BeautifulSoup, and Pandas.
+
+\end{itemize}
+
+% ==========================================================
+% SELECTED PROJECTS
+% ==========================================================
+
+\section{Selected Academic Projects}
+
+\projectEntry
+{ShopPulse -- End-to-End E-Commerce Data Platform}
+{Sept. 2026}
+\vspace{-11pt}
+
+\begin{itemize}
+    \item Developed a Dockerized e-commerce data platform integrating PostgreSQL and Kafka.
+    Automated data pipelines with Kestra and managed raw and processed data in MinIO.
+    Used Spark and dbt for data transformation and analytical modeling.
+    Exposed key business metrics through FastAPI and an interactive dashboard.
+\end{itemize}
+
+\vspace{1pt}
+
+
+\projectEntry
+{Pulmonary Disease Classification -- Abderrahmen Mami Hospital}
+{Feb. -- Apr. 2025}
+\vspace{-11pt}
+
+\begin{itemize}
+    \item Developed a CNN-based chest X-ray classification pipeline covering
+    preprocessing, data augmentation, class-imbalance handling,
+    hyperparameter optimization, ROC analysis, and F1-score evaluation.
+\end{itemize}
+
+\vspace{1pt}
+
+\projectEntry
+{Brain Tumor Classification -- Deep Learning}
+{Apr. -- Jun. 2025}
+\vspace{-11pt}
+
+\begin{itemize}
+    \item Built a transfer-learning pipeline for multi-class MRI brain tumor
+    classification, including preprocessing, augmentation, training,
+    visualization, and model evaluation.
+\end{itemize}
+
+\vspace{1pt}
+
+\projectEntry
+{Football Player Detection and Tracking}
+{Mar. -- May 2024}
+\vspace{-9pt}
+
+\begin{itemize}
+    \item Developed a real-time computer-vision pipeline using YOLO and ByteTrack
+    for player detection, tracking, team classification, trajectory analysis,
+    speed estimation, and match analytics.
+\end{itemize}
+
+% ==========================================================
+% EDUCATION
+% ==========================================================
+
+\section{Education}
+
+\resumeEntry
+{Engineering Degree in ICT -- Intelligent Image Applications and Data Science}
+{Sept. 2023 -- Sept. 2026}
+{Higher School of Communications of Tunis (SUP'COM)}
+{Tunis, Tunisia}
+
+
+\resumeEntry
+{Preparatory Program in Physics and Technology}
+{Sept. 2021 -- Aug. 2023}
+{Preparatory Institute for Engineering Studies}
+{Sfax, Tunisia}
+\vspace{-4pt}
+
+
+{\small
+\textbf{National Engineering Entrance Examination:}
+Ranked 28th out of 780 candidates.
+}
+\vspace{-4pt}
+
+% ==========================================================
+% CERTIFICATIONS & LEADERSHIP
+% ==========================================================
+
+\section{Certifications \& Leadership}
+
+\textbf{Certifications:}
+Machine Learning Specialization -- Coursera;
+Deep Learning with PyTorch -- DataCamp.
+
+
+
+\textbf{Leadership \& Activities:}
+Team SUP'COM -- Logistics Manager;
+IndabaX Tunisia 2024 -- Organizing Committee;
+PACTE -- Led a three-day competitive programming workshop.
+
+% ==========================================================o
+% LANGUAGES
+% ==========================================================
+
+\section{Languages}
+
+\textbf{Arabic} -- Native
+\hfill
+\textbf{French} -- Fluent
+\hfill
+\textbf{English} -- Advanced
+
+\end{document}

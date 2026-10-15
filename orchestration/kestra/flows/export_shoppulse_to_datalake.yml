@@ -1,0 +1,411 @@
+id: export_shoppulse_to_datalake
+namespace: shoppulse.datalake
+
+description: Export quotidien des zones raw, processed et analytics de ShopPulse vers MinIO
+
+labels:
+  project: shoppulse
+  pipeline: datalake
+
+retry:
+  type: exponential
+  behavior: RETRY_FAILED_TASK
+  maxAttempts: 3
+  interval: PT10S
+  maxInterval: PT1M
+  maxDuration: PT10M
+  warningOnRetry: true
+
+tasks:
+  - id: extraire_customers
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: SELECT * FROM shop.customers ORDER BY customer_id;
+    fetchType: STORE
+
+  - id: convertir_customers_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_customers.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_customers_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "raw/customers/date={{ execution.startDate | date('yyyy-MM-dd') }}/customers_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_customers_csv.uri }}"
+
+  - id: extraire_products
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: SELECT * FROM shop.products ORDER BY product_id;
+    fetchType: STORE
+
+  - id: convertir_products_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_products.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_products_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "raw/products/date={{ execution.startDate | date('yyyy-MM-dd') }}/products_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_products_csv.uri }}"
+
+  - id: extraire_orders
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: SELECT * FROM shop.orders ORDER BY order_id;
+    fetchType: STORE
+
+  - id: convertir_orders_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_orders.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_orders_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "raw/orders/date={{ execution.startDate | date('yyyy-MM-dd') }}/orders_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_orders_csv.uri }}"
+
+  - id: extraire_order_items
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: SELECT * FROM shop.order_items ORDER BY order_item_id;
+    fetchType: STORE
+
+  - id: convertir_order_items_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_order_items.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_order_items_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "raw/order_items/date={{ execution.startDate | date('yyyy-MM-dd') }}/order_items_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_order_items_csv.uri }}"
+
+  - id: extraire_events
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: SELECT * FROM shop.events ORDER BY event_id;
+    fetchType: STORE
+
+  - id: convertir_events_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_events.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_events_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "raw/events/date={{ execution.startDate | date('yyyy-MM-dd') }}/events_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_events_csv.uri }}"
+
+  # Zone processed : données nettoyées et enrichies.
+  - id: extraire_processed_orders
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: |
+      SELECT
+        o.order_id,
+        o.order_number,
+        o.customer_id,
+        lower(c.email) AS customer_email,
+        c.country_code,
+        c.acquisition_channel,
+        o.order_status,
+        o.currency,
+        o.subtotal_amount,
+        o.discount_amount,
+        o.shipping_amount,
+        o.tax_amount,
+        o.total_amount,
+        o.source_channel,
+        o.ordered_at,
+        o.updated_at
+      FROM shop.orders AS o
+      JOIN shop.customers AS c ON c.customer_id = o.customer_id
+      ORDER BY o.order_id;
+    fetchType: STORE
+
+  - id: convertir_processed_orders_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_processed_orders.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_processed_orders_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "processed/orders/date={{ execution.startDate | date('yyyy-MM-dd') }}/orders_enriched_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_processed_orders_csv.uri }}"
+
+  - id: extraire_processed_products
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: |
+      SELECT
+        p.product_id,
+        p.sku,
+        trim(p.product_name) AS product_name,
+        c.category_name,
+        p.unit_price,
+        p.unit_cost,
+        p.currency,
+        p.is_active,
+        i.warehouse_code,
+        i.quantity_on_hand,
+        i.quantity_reserved,
+        i.quantity_on_hand - i.quantity_reserved AS quantity_available,
+        i.reorder_level,
+        i.updated_at
+      FROM shop.products AS p
+      JOIN shop.categories AS c ON c.category_id = p.category_id
+      JOIN shop.inventory AS i ON i.product_id = p.product_id
+      ORDER BY p.product_id;
+    fetchType: STORE
+
+  - id: convertir_processed_products_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_processed_products.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_processed_products_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "processed/products/date={{ execution.startDate | date('yyyy-MM-dd') }}/products_inventory_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_processed_products_csv.uri }}"
+
+  - id: extraire_processed_events
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: |
+      SELECT
+        e.event_id,
+        e.session_id,
+        e.customer_id,
+        e.product_id,
+        e.order_id,
+        e.event_type,
+        e.event_time,
+        e.ingested_at,
+        ws.device_type,
+        ws.source_channel,
+        ws.campaign_name,
+        e.schema_version
+      FROM shop.events AS e
+      JOIN shop.web_sessions AS ws ON ws.session_id = e.session_id
+      ORDER BY e.event_time, e.event_id;
+    fetchType: STORE
+
+  - id: convertir_processed_events_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_processed_events.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_processed_events_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "processed/events/date={{ execution.startDate | date('yyyy-MM-dd') }}/events_enriched_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_processed_events_csv.uri }}"
+
+  # Zone analytics : vues métier prêtes à être consommées.
+  - id: extraire_analytics_daily_sales
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: SELECT * FROM analytics.v_daily_sales ORDER BY order_date, currency;
+    fetchType: STORE
+
+  - id: convertir_analytics_daily_sales_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_analytics_daily_sales.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_analytics_daily_sales_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "analytics/daily_sales/date={{ execution.startDate | date('yyyy-MM-dd') }}/daily_sales_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_analytics_daily_sales_csv.uri }}"
+
+  - id: extraire_analytics_product_performance
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: SELECT * FROM analytics.v_product_performance ORDER BY product_id;
+    fetchType: STORE
+
+  - id: convertir_analytics_product_performance_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_analytics_product_performance.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_analytics_product_performance_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "analytics/product_performance/date={{ execution.startDate | date('yyyy-MM-dd') }}/product_performance_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_analytics_product_performance_csv.uri }}"
+
+  - id: extraire_analytics_customer_summary
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: SELECT * FROM analytics.v_customer_summary ORDER BY customer_id;
+    fetchType: STORE
+
+  - id: convertir_analytics_customer_summary_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_analytics_customer_summary.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_analytics_customer_summary_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "analytics/customer_summary/date={{ execution.startDate | date('yyyy-MM-dd') }}/customer_summary_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_analytics_customer_summary_csv.uri }}"
+
+  - id: extraire_analytics_conversion_funnel
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: SELECT * FROM analytics.v_conversion_funnel ORDER BY session_date, source_channel, device_type;
+    fetchType: STORE
+
+  - id: convertir_analytics_conversion_funnel_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.extraire_analytics_conversion_funnel.uri }}"
+    header: true
+    quoteMode: REQUIRED
+
+  - id: charger_analytics_conversion_funnel_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "analytics/conversion_funnel/date={{ execution.startDate | date('yyyy-MM-dd') }}/conversion_funnel_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_analytics_conversion_funnel_csv.uri }}"
+
+  - id: confirmer_export
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Export ShopPulse terminé avec succès.
+      Zones mises à jour : raw, processed et analytics.
+      Date du lot : {{ execution.startDate | date('yyyy-MM-dd HH:mm:ss') }}.
+
+triggers:
+  - id: export_quotidien_2h
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "0 2 * * *"
+    timezone: Africa/Lagos
+    allowConcurrent: false
+    recoverMissedSchedules: LAST
+
+errors:
+  - id: journaliser_erreur
+    type: io.kestra.plugin.core.log.Log
+    level: ERROR
+    message: |
+      Échec du pipeline {{ flow.namespace }}.{{ flow.id }}.
+      Exécution : {{ execution.id }}.
+      Tâches en échec : {{ tasksWithState('FAILED') }}.

@@ -1,0 +1,35 @@
+id: export_orders_to_minio
+namespace: shoppulse.datalake
+
+description: Exporter les commandes ShopPulse vers le Data Lake MinIO
+
+tasks:
+  - id: exporter_commandes
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: "{{ envs.shoppulse_db_url }}"
+    username: "{{ envs.shoppulse_db_user }}"
+    password: "{{ envs.shoppulse_db_password }}"
+    sql: |
+      SELECT *
+      FROM shop.orders
+      ORDER BY created_at;
+    fetchType: STORE
+
+  - id: convertir_en_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.exporter_commandes.uri }}"
+    header: true
+    fieldSeparator: ","
+    quoteMode: REQUIRED
+
+  - id: envoyer_vers_minio
+    type: io.kestra.plugin.aws.s3.Upload
+    accessKeyId: "{{ envs.minio_access_key }}"
+    secretKeyId: "{{ envs.minio_secret_key }}"
+    endpointOverride: "http://minio:9000"
+    region: "us-east-1"
+    compatibilityMode: true
+    forcePathStyle: true
+    bucket: "shoppulse"
+    key: "raw/orders/date={{ execution.startDate | date('yyyy-MM-dd') }}/orders_{{ execution.startDate | date('HH-mm-ss') }}.csv"
+    from: "{{ outputs.convertir_en_csv.uri }}"

@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "ShopPulse PostgreSQL",
+      "Group": "ShopPulse",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "shoppulse",
+      "Username": "shoppulse",
+      "SSLMode": "prefer"
+    }
+  }
+}
+
